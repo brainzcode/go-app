@@ -1,0 +1,27 @@
+name: Deploy Test Go Application
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Source
+        uses: actions/checkout@v4
+      - name: Create .env File
+        run: echo "PORT= ${{ secrets.PORT }}" >> .env
+      - name: Login to Docker Hub
+        run: docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
+      - name: Build Docker Image
+        run: docker build -t ${{ secrets.DOCKER_USERNAME }}/go-app .
+      - name: Push Docker Image
+        run: docker push brainzcode/go-app
+  deploy:
+    needs: build
+    runs-on: self-hosted
+    steps:
+      - name: Pull Docker Image
+        run: docker pull brainzcode/go-app
