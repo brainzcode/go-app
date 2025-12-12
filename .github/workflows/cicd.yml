@@ -18,10 +18,14 @@ jobs:
       - name: Build Docker Image
         run: docker build -t ${{ secrets.DOCKER_USERNAME }}/go-app .
       - name: Push Docker Image
-        run: docker push brainzcode/go-app
+        run: docker push brainzcode/go-app:latest
   deploy:
     needs: build
     runs-on: self-hosted
     steps:
       - name: Pull Docker Image
-        run: docker pull brainzcode/go-app
+        run: docker pull brainzcode/go-app:latest
+      - name: Stop and Remove Docker Container
+        run: docker stop go-app-container && docker rm go-app-container || true
+      - name: Run Docker Container
+        run: docker run -d -p 9090:9090 --name go-app-container brainzcode/go-app
