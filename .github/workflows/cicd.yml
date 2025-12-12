@@ -14,7 +14,7 @@ jobs:
       - name: Create .env File
         run: echo "PORT= ${{ secrets.PORT }}" >> .env
       - name: Login to Docker Hub
-        run: docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
+        run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
       - name: Build Docker Image
         run: docker build -t ${{ secrets.DOCKER_USERNAME }}/go-app .
       - name: Push Docker Image
